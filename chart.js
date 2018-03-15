@@ -15,7 +15,7 @@ class Chart {
     // Create the parent SVG
     this.width = 960;
     this.height = 500;
-    this.margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    this.margin = { top: 100, right: 10, bottom: 30, left: 75 };
 
     // Give your title and axes some space
     this.innerHeight = this.height - (this.margin.top + this.margin.bottom);
@@ -40,17 +40,6 @@ class Chart {
   createScales() {
     // These map our data to positions on the screen
     // https://github.com/d3/d3-scale
-
-    // this.xScale = d3.someScale()
-    //   .domain([])
-    //   .range([]);
-
-    // this.yScale = d3.someScale()
-    //   .range([])
-    //   .domain([]);
-
-    console.log(this.keys);
-
     this.x0Scale = d3.scaleBand()
       .domain(this.keys)
       .rangeRound([0, innerWidth])
@@ -61,14 +50,14 @@ class Chart {
       .rangeRound([0, this.x0Scale.bandwidth()])
       .padding(0.05);
 
-    
-    console.log(this.data[0]);
-    
-    const maxList = [];
-    for(let i = 0; i < this.data.length; i++) {
-      maxList.push( d3.max(this.keys.map( question => this.data[i][question] )) );
+    this.maxPercent = [];
+    for (let i = 0; i < this.data.length; i++) {
+      this.maxPercent.push(d3.max(this.keys.map(question => this.data[i][question])));
     }
-    console.log(d3.max(maxList));
+
+    this.yScale = d3.scaleLinear()
+      .domain([0, d3.max(this.maxPercent)]).nice()
+      .rangeRound([this.innerHeight, 0]);
 
     // STOPPED REFACTORING HERE
 
@@ -79,22 +68,14 @@ class Chart {
   addAxes() {
     // Axes aren't necessary for every chart type, but
     // you know where to add your code if you need them.
-    g.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(0," + height + ")")
+    this.plot.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + this.innerHeight + ")")
       .call(d3.axisBottom(this.x0Scale));
 
-    g.append("g")
-      .attr("class", "axis")
-      .call(d3.axisLeft(this.yScale).ticks(null, "s"))
-      .append("text")
-      .attr("x", 2)
-      .attr("y", this.yScale(this.yScale.ticks().pop()) + 0.5)
-      .attr("dy", "0.32em")
-      .attr("fill", "#000")
-      .attr("font-weight", "bold")
-      .attr("text-anchor", "start")
-      .text("Population");
+    this.plot.append("g")
+      .attr("class", "y axis")
+      .call(d3.axisLeft(this.yScale).ticks(null, "s"));
 
   }
 
@@ -120,19 +101,23 @@ class Chart {
 
   addChart() {
     // Now it is time to see those lovely SVGs <3
-    g.append("g")
+    const majorG = this.plot.append("g")
       .selectAll("g")
-      .data(data)
+      .data(this.data)
       .enter().append("g")
-      .attr("transform", function (d) { return "translate(" + this.x0Scale(d.State) + ",0)"; })
-      .selectAll("rect")
-      .data(function (d) { return keys.map(function (key) { return { key: key, value: d[key] }; }); })
-      .enter().append("rect")
-      .attr("x", function (d) { return this.x1Scale(d.key); })
-      .attr("y", function (d) { return this.yScale(d.value); })
+      .attr("transform", (d, i) => {
+        return "translate(" + this.x0Scale(this.keys[i]) + ",0)";
+      })
+
+    const minorG = majorG.selectAll("rect")
+      .data( d => this.keys.map( key => ({ key: key, value: +d[key] }) ) );
+
+    minorG.enter().append("rect")
+      .attr("x", d => this.x1Scale(d.key) )
+      .attr("y", d => this.yScale(d.value) )
       .attr("width", this.x1Scale.bandwidth())
-      .attr("height", function (d) { return height - this.yScale(d.value); })
-      .attr("fill", function (d) { return this.colorScale(d.key); });
+      .attr("height", d => this.innerHeight - this.yScale(d.value) )
+      .attr("fill", d => this.colorScale(d.key) );
   }
 
 }
