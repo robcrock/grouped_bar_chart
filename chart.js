@@ -6,8 +6,6 @@ class Chart {
     this.keys = opts.keys;
     this.data = opts.data;
 
-    console.log(this.keys);
-
     this.draw();
 
   }
@@ -52,16 +50,11 @@ class Chart {
       .rangeRound([0, this.x0Scale.bandwidth()])
       .padding(0.05);
 
-    this.maxPercent = [];
-    for (let i = 0; i < this.data.length; i++) {
-      this.maxPercent.push(d3.max(this.keys.map(question => this.data[i][question])));
-    }
+    const yMax = d3.max(this.data.map(d => d3.max(this.keys.map(key => d[key]))));
 
     this.yScale = d3.scaleLinear()
-      .domain([0, d3.max(this.maxPercent)]).nice()
+      .domain([0, yMax]).nice()
       .rangeRound([this.innerHeight, 0]);
-
-    // STOPPED REFACTORING HERE
 
     this.colorScale = d3.scaleOrdinal()
       .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
