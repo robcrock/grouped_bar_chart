@@ -6,6 +6,8 @@ class Chart {
     this.keys = opts.keys;
     this.data = opts.data;
 
+    console.log(this.keys);
+
     this.draw();
 
   }
@@ -42,7 +44,7 @@ class Chart {
     // https://github.com/d3/d3-scale
     this.x0Scale = d3.scaleBand()
       .domain(this.keys)
-      .rangeRound([0, innerWidth])
+      .rangeRound([0, this.innerWidth])
       .paddingInner(0.1);
 
     this.x1Scale = d3.scaleBand()
@@ -66,41 +68,41 @@ class Chart {
   }
 
   addAxes() {
-    // Axes aren't necessary for every chart type, but
-    // you know where to add your code if you need them.
+
     this.plot.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + this.innerHeight + ")")
-      .call(d3.axisBottom(this.x0Scale));
+      .call(
+          d3.axisBottom(this.x0Scale)
+        );
 
     this.plot.append("g")
       .attr("class", "y axis")
-      .call(d3.axisLeft(this.yScale).ticks(null, "s"));
+      .call(
+          d3.axisLeft(this.yScale)
+            .ticks(5)
+            .tickFormat(d3.format(".0%"))
+        );
 
   }
 
   addTitles() {
-    // Add chart title
+
     this.plot.append('text')
       .attr("class", "chart title")
       .attr('x', 0)
-      .attr('y', -30)
-      .text("Main point or question to ponder");
+      .attr('y', -50)
+      .text("Which characteristic do British women find most attractive?");
 
-    // Add chart subtitle
     this.plot.append('text')
       .attr("class", "chart subtitle")
       .attr('x', 0)
-      .attr('y', -5)
-      .text("Supportive information to aid graphicacy");
-
-    // Add x-axis title
-
-    // Add y-axis title
+      .attr('y', -15)
+      .text("Below are the six traits and distribution of votes by rank");
   }
 
   addChart() {
-    // Now it is time to see those lovely SVGs <3
+
     const majorG = this.plot.append("g")
       .selectAll("g")
       .data(this.data)
@@ -118,6 +120,7 @@ class Chart {
       .attr("width", this.x1Scale.bandwidth())
       .attr("height", d => this.innerHeight - this.yScale(d.value) )
       .attr("fill", d => this.colorScale(d.key) );
+
   }
 
 }
