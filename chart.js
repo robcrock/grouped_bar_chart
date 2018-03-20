@@ -1,4 +1,4 @@
-class Chart {
+class groupedBarChart {
 
   constructor(opts) {
 
@@ -13,9 +13,9 @@ class Chart {
   draw() {
 
     // Create the parent SVG
-    this.width = 960;
-    this.height = 500;
-    this.margin = { top: 100, right: 10, bottom: 30, left: 75 };
+    this.width = 900;
+    this.height = 648;
+    this.margin = { top: 120, right: 10, bottom: 30, left: 75 };
 
     // Give your title and axes some space
     this.innerHeight = this.height - (this.margin.top + this.margin.bottom);
@@ -31,10 +31,10 @@ class Chart {
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
     // Call the necessary functions
+    this.addTitles();
     this.createScales();
-    this.addAxes();
-    this.addTitles()
     this.addChart();
+    this.addAxes();
   }
 
   createScales() {
@@ -57,25 +57,33 @@ class Chart {
       .rangeRound([this.innerHeight, 0]);
 
     this.colorScale = d3.scaleOrdinal()
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+      .range(["#1295BA", "#5CA793", "#A2B86C", "#EBC844", "#ECAA37", "#EF8B2C"]);
   }
 
   addAxes() {
 
-    this.plot.append("g")
+    const xAxis = this.plot.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + this.innerHeight + ")")
       .call(
           d3.axisBottom(this.x0Scale)
         );
 
-    this.plot.append("g")
-      .attr("class", "y axis")
-      .call(
-          d3.axisLeft(this.yScale)
-            .ticks(5)
-            .tickFormat(d3.format(".0%"))
-        );
+    const yAxis = this.plot.append("g")
+      .attr("class", "y axis").call(
+      d3.axisLeft(this.yScale)
+        .ticks(5)
+        .tickSize(-this.innerWidth)
+        .tickFormat(d3.format(".0%"))
+      );
+
+    const numberOfTicks = d3.selectAll(".y.axis .tick")._groups[0].length - 1;
+
+    yAxis.selectAll(".tick")._groups[0].forEach( (tick, num) => {
+      if ( num !== numberOfTicks) {
+        tick.children[1].innerHTML = tick.children[1].innerHTML.replace("%", "");
+      }
+    })
 
   }
 
@@ -84,14 +92,15 @@ class Chart {
     this.plot.append('text')
       .attr("class", "chart title")
       .attr('x', 0)
-      .attr('y', -50)
-      .text("Which characteristic do British women find most attractive?");
+      .attr('y', -60)
+      .text("What British women (say they) want?");
 
     this.plot.append('text')
       .attr("class", "chart subtitle")
       .attr('x', 0)
-      .attr('y', -15)
-      .text("Below are the six traits and distribution of votes by rank");
+      .attr('y', -20)
+      .text("The bars represent a rank (1 to 6) and the percent of votes it recieved for a particular trait.");
+
   }
 
   addChart() {

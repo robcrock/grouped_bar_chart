@@ -1,3 +1,25 @@
-.axis .domain {
+text {
+  fill: #999;
+  font-family: roboto;
+  font-size: small;
+}
+.title {
+    font-size: 48px;
+    fill: #222;
+}
+.subtitle {
+  fill: #222;
+}
+.y.axis path {
+  display: none;
+}
+.y.axis g line {
+  stroke: white;
+  opacity: .35;
+}
+.y.axis g:last-child {
+  fill: red;
+}
+.x.axis path, .x.axis g line {
   display: none;
 }

@@ -1,19 +1,20 @@
 d3.csv('data.csv').then( data => {
+  
+  const keys = Object.keys(data[0]).slice(1);
 
-  const questions = Object.keys(data[0]).slice(1);
-
-  data.forEach( rank => {
-    questions.forEach( key => {
-      rank[key] = +rank[key];
+  data.forEach(obj => {
+    keys.forEach(key => {
+      obj[key] = +obj[key];
     })
   });
 
-  createChart(questions, data);
+  createChart(keys, data);
+
 });
 
 function createChart(keys, data) {
 
-  const chart = new Chart({
+  const chart = new groupedBarChart({
     element: document.querySelector('body'),
     keys: keys,
     data: data
