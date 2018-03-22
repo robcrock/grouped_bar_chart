@@ -142,14 +142,13 @@ class groupedBarChart {
       })
 
     const minorG = majorG.selectAll("rect")
-      .data( d => this.keys.map( key => ({ key: key, value: +d[key] }) ) );
-
-    minorG.enter().append("rect")
-      .attr("x", d => this.x1Scale(d.key) )
-      .attr("y", d => this.yScale(d.value) )
-      .attr("width", this.x1Scale.bandwidth())
-      .attr("height", d => this.innerHeight - this.yScale(d.value) )
-      .attr("fill", d => this.colorScale(d.key) );
+      .data( d => this.keys.map( key => ({ key: key, value: +d[key] }) ) )
+      .enter().append("rect")
+        .attr("x", d => this.x1Scale(d.key) )
+        .attr("y", d => this.yScale(d.value) )
+        .attr("width", this.x1Scale.bandwidth())
+        .attr("height", d => this.innerHeight - this.yScale(d.value) )
+        .attr("fill", d => this.colorScale(d.key) );
 
   }
 
