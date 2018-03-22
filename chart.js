@@ -38,49 +38,6 @@ class groupedBarChart {
 
   }
 
-  createScales() {
-    // These map our data to positions on the screen
-    // https://github.com/d3/d3-scale
-
-    this.x0Scale = d3.scaleBand()
-      .domain(this.keys)
-      .rangeRound([0, this.innerWidth])
-      .paddingInner(0.1);
-
-    this.x1Scale = d3.scaleBand()
-      .domain(this.keys)
-      .rangeRound([0, this.x0Scale.bandwidth()])
-      .padding(0.05);
-
-    const yMax = d3.max(this.data.map(d => d3.max(this.keys.map(key => d[key]))));
-
-    this.yScale = d3.scaleLinear()
-      .domain([0, yMax]).nice()
-      .rangeRound([this.innerHeight, 0]);
-
-  }
-
-  addAxes() {
-
-    const xAxis = this.plot.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + this.innerHeight + ")")
-      .call(
-        d3.axisBottom(this.x0Scale)
-      );
-
-    const yAxis = this.plot.append("g")
-      .attr("class", "y axis")
-      .call(
-        d3.axisLeft(this.yScale)
-          .ticks(5)
-          .tickSize(-this.innerWidth)
-          .tickFormat(d3.format(".0%")
-        )
-      );
-
-  }
-
   addTitles() {
 
     this.plot.append('text')
@@ -98,6 +55,28 @@ class groupedBarChart {
 
   }
 
+  createScales() {
+    // These map our data to positions on the screen
+    // https://github.com/d3/d3-scale
+
+    this.x0Scale = d3.scaleBand()
+      .domain(this.keys)
+      .rangeRound([0, this.innerWidth])
+      .paddingInner(0.1);
+
+    this.x1Scale = d3.scaleBand()
+      .domain([1,2,3,4,5,6])
+      .rangeRound([0, this.x0Scale.bandwidth()])
+      .padding(0.05);
+
+    const yMax = d3.max(this.data.map(d => d3.max(this.keys.map(key => d[key]))));
+
+    this.yScale = d3.scaleLinear()
+      .domain([0, yMax]).nice()
+      .rangeRound([this.innerHeight, 0]);
+
+  }
+
   addChart() {
 
     const majorG = this.plot.append("g")
@@ -108,14 +87,44 @@ class groupedBarChart {
           return "translate(" + this.x0Scale(this.keys[i]) + ",0)";
         })
 
+    ///////////////////
+    // LEFT OFF HERE //
+    ///////////////////
+    
     const minorG = majorG.selectAll("rect")
-      .data( d => this.keys.map( key => ({ key: key, value: +d[key] }) ) )
+      .data( d => this.keys.map( ( 
+        key => {
+          console.log(d);
+          ({ key: key, value: +d[key] }) 
+        }
+      ) ))
       .enter().append("rect")
         .attr("x", d => this.x1Scale(d.key) )
         .attr("y", d => this.yScale(d.value) )
         .attr("width", this.x1Scale.bandwidth())
         .attr("height", d => this.innerHeight - this.yScale(d.value) )
         .attr("fill", "#3399CC" );
+
+  }
+
+  addAxes() {
+
+    const xAxis = this.plot.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + this.innerHeight + ")")
+      .call(
+      d3.axisBottom(this.x0Scale)
+      );
+
+    const yAxis = this.plot.append("g")
+      .attr("class", "y axis")
+      .call(
+      d3.axisLeft(this.yScale)
+        .ticks(5)
+        .tickSize(-this.innerWidth)
+        .tickFormat(d3.format(".0%")
+        )
+      );
 
   }
 
