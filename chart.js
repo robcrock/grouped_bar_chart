@@ -15,7 +15,7 @@ class groupedBarChart {
     // Create the parent SVG
     this.width = 900;
     this.height = 648;
-    this.margin = { top: 120, right: 10, bottom: 30, left: 75 };
+    this.margin = { top: 145, right: 10, bottom: 30, left: 75 };
 
     // Give your title and axes some space
     this.innerHeight = this.height - (this.margin.top + this.margin.bottom);
@@ -92,14 +92,42 @@ class groupedBarChart {
     this.plot.append('text')
       .attr("class", "chart title")
       .attr('x', 0)
-      .attr('y', -60)
-      .text("What British women (say they) want?");
+      .attr('y', -90)
+      .text("What British women want?");
 
     this.plot.append('text')
       .attr("class", "chart subtitle")
       .attr('x', 0)
-      .attr('y', -20)
-      .text("The bars represent a rank (1 to 6) and the percent of votes it recieved for a particular trait.");
+      .attr('y', -55)
+      .attr("dy", 0)
+      .text("Each group of bars represent a personality trait. The bar represent ranks from 1 to 6. The left most bar is 1, meaning that the trait is highly desirable. The right most bar is 6, indicating very little love interest in this trait. The height of each bar represents the percent of votes a particular rank received.")
+        .call(wrap, this.innerWidth)
+
+    function wrap(text, width) {
+      text.each(function () {
+        var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+
+        console.log(text);
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+          }
+        }
+      });
+    }
 
   }
 
