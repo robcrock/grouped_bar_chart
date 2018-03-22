@@ -17,9 +17,6 @@ text {
   stroke: white;
   opacity: .35;
 }
-.y.axis g:last-child {
-  fill: red;
-}
 .x.axis path, .x.axis g line {
   display: none;
 }
