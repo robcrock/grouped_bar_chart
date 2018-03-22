@@ -42,81 +42,37 @@ class groupedBarChart {
     // These map our data to positions on the screen
     // https://github.com/d3/d3-scale
 
-    this.x0Scale = d3.scaleBand()
-      .domain(this.keys)
-      .rangeRound([0, this.innerWidth])
-      .paddingInner(0.1);
+    // Major group
 
-    this.x1Scale = d3.scaleBand()
-      .domain(this.keys)
-      .rangeRound([0, this.x0Scale.bandwidth()])
-      .padding(0.05);
+    // Minor group
 
-    const yMax = d3.max(this.data.map(d => d3.max(this.keys.map(key => d[key]))));
+    // Top of you y domain
 
-    this.yScale = d3.scaleLinear()
-      .domain([0, yMax]).nice()
-      .rangeRound([this.innerHeight, 0]);
+    // y scale
 
   }
 
   addAxes() {
 
-    const xAxis = this.plot.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + this.innerHeight + ")")
-      .call(
-        d3.axisBottom(this.x0Scale)
-      );
+    // x axis
 
-    const yAxis = this.plot.append("g")
-      .attr("class", "y axis")
-      .call(
-        d3.axisLeft(this.yScale)
-          .ticks(5)
-          .tickSize(-this.innerWidth)
-          .tickFormat(d3.format(".0%")
-        )
-      );
+    // y axis
 
   }
 
   addTitles() {
 
-    this.plot.append('text')
-      .attr("class", "chart title")
-      .attr('x', 0)
-      .attr('y', -45)
-      .text("What British women want?");
+    // Title
 
-    this.plot.append('text')
-      .attr("class", "chart subtitle")
-      .attr('x', 0)
-      .attr('y', -20)
-      .attr("dy", 0)
-      .text("Each bar represents a ranks, from 1 to 6, where 1 is highly desirable and 6 is not at all.");
+    // Subtitle
 
   }
 
   addChart() {
 
-    const majorG = this.plot.append("g")
-      .selectAll("g")
-      .data(this.data)
-      .enter().append("g")
-      .attr("transform", (d, i) => {
-        return "translate(" + this.x0Scale(this.keys[i]) + ",0)";
-      })
+    // Major group
 
-    const minorG = majorG.selectAll("rect")
-      .data( d => this.keys.map( key => ({ key: key, value: +d[key] }) ) );
-
-    minorG.enter().append("rect")
-      .attr("x", d => this.x1Scale(d.key) )
-      .attr("y", d => this.yScale(d.value) )
-      .attr("width", this.x1Scale.bandwidth())
-      .attr("height", d => this.innerHeight - this.yScale(d.value) )
-      .attr("fill", "#3399CC" );
+    // Bars within each group
 
   }
 
