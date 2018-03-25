@@ -92,10 +92,10 @@ class groupedBarChart {
     ///////////////////
     
     const minorG = majorG.selectAll("rect")
-      .data( d => this.keys.map( ( 
+      .data( (d, i) => this.keys.map( ( 
         key => {
-          console.log(d);
-          ({ key: key, value: +d[key] }) 
+          console.log(({ key: d.rank, value: d[this.keys[i]] }));
+          ({ key: d.rank, value: d[this.keys[i]] }) 
         }
       ) ))
       .enter().append("rect")
