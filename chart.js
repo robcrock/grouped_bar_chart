@@ -3,7 +3,8 @@ class groupedBarChart {
   constructor(opts) {
 
     this.element = opts.element;
-    this.keys = opts.keys;
+    this.majorCat = opts.majorCat;
+    this.minorCat = opts.minorCat;
     this.data = opts.data;
 
     this.draw();
@@ -41,16 +42,16 @@ class groupedBarChart {
     // These map our data to positions on the screen
     // https://github.com/d3/d3-scale
     this.x0Scale = d3.scaleBand()
-      .domain(this.keys)
+      .domain(this.majorCat)
       .rangeRound([0, this.innerWidth])
       .paddingInner(0.1);
 
     this.x1Scale = d3.scaleBand()
-      .domain(this.keys)
+      .domain(this.minorCat)
       .rangeRound([0, this.x0Scale.bandwidth()])
       .padding(0.05);
 
-    const yMax = d3.max(this.data.map(d => d3.max(this.keys.map(key => d[key]))));
+    const yMax = d3.max(this.data.map(d => d3.max(this.majorCat.map(key => d[key]))));
 
     this.yScale = d3.scaleLinear()
       .domain([0, yMax]).nice()
@@ -115,7 +116,6 @@ class groupedBarChart {
           dy = parseFloat(text.attr("dy")),
           tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
 
-        console.log(text);
         while (word = words.pop()) {
           line.push(word);
           tspan.text(line.join(" "));
@@ -137,12 +137,10 @@ class groupedBarChart {
       .selectAll("g")
       .data(this.data)
       .enter().append("g")
-      .attr("transform", (d, i) => {
-        return "translate(" + this.x0Scale(this.keys[i]) + ",0)";
-      })
+      .attr("transform", (d, i) => `translate( ${this.x0Scale(this.majorCat[i])}, 0)`);
 
     const minorG = majorG.selectAll("rect")
-      .data( d => this.keys.map( key => ({ key: key, value: +d[key] }) ) )
+      .data( d => this.majorCat.map( (key, i) => ({ key: this.minorCat[i], value: d[key] })))
       .enter().append("rect")
         .attr("x", d => this.x1Scale(d.key) )
         .attr("y", d => this.yScale(d.value) )
