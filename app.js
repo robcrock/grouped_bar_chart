@@ -1,24 +1,24 @@
-d3.csv('data.csv').then( data => {
+d3.csv('data.csv').then(data => {
 
-  // Grab the group labels
-  const keys = Object.keys(data[0]).slice(1);
+  const majorCat = Object.keys(data[0]).slice(1);
+  const minorCat = data.map(obj => obj[Object.keys(obj)[0]]);
 
-  // Coerse the strings in to numbers
   data.forEach(obj => {
-    keys.forEach(key => {
+    majorCat.forEach(key => {
       obj[key] = +obj[key];
     })
   });
 
-  createChart(keys, data);
+  createChart(majorCat, minorCat, data);
 
 });
 
-function createChart(keys, data) {
+function createChart(majorCat, minorCat, data) {
 
   const chart = new groupedBarChart({
     element: document.querySelector('body'),
-    keys: keys,
+    majorCat: majorCat,
+    minorCat: minorCat,
     data: data
   });
 
