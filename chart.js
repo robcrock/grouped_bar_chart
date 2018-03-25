@@ -3,7 +3,8 @@ class groupedBarChart {
   constructor(opts) {
 
     this.element = opts.element;
-    this.keys = opts.keys;
+    this.majorCat = opts.majorCat;
+    this.minorCat = opts.minorCat;
     this.data = opts.data;
 
     this.draw();
@@ -15,7 +16,7 @@ class groupedBarChart {
     // Create the parent SVG
     this.width = 900;
     this.height = 648;
-    this.margin = { top: 90, right: 10, bottom: 30, left: 75 };
+    this.margin = { top: 145, right: 10, bottom: 30, left: 75 };
 
     // Give your title and axes some space
     this.innerHeight = this.height - (this.margin.top + this.margin.bottom);
@@ -38,41 +39,19 @@ class groupedBarChart {
 
   }
 
-  createScales() {
-    // These map our data to positions on the screen
-    // https://github.com/d3/d3-scale
-
-    // Major group
-
-    // Minor group
-
-    // Top of you y domain
-
-    // y scale
-
-  }
-
-  addAxes() {
-
-    // x axis
-
-    // y axis
-
-  }
-
   addTitles() {
 
-    // Title
+  }
 
-    // Subtitle
+  createScales() {
 
   }
 
   addChart() {
 
-    // Major group
+  }
 
-    // Bars within each group
+  addAxes() {
 
   }
 
