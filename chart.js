@@ -3,7 +3,8 @@ class groupedBarChart {
   constructor(opts) {
 
     this.element = opts.element;
-    this.keys = opts.keys;
+    this.majorCat = opts.majorCat;
+    this.minorCat = opts.minorCat;
     this.data = opts.data;
 
     this.draw();
@@ -15,7 +16,7 @@ class groupedBarChart {
     // Create the parent SVG
     this.width = 900;
     this.height = 648;
-    this.margin = { top: 90, right: 10, bottom: 30, left: 75 };
+    this.margin = { top: 145, right: 10, bottom: 30, left: 75 };
 
     // Give your title and axes some space
     this.innerHeight = this.height - (this.margin.top + this.margin.bottom);
@@ -43,33 +44,31 @@ class groupedBarChart {
     this.plot.append('text')
       .attr("class", "chart title")
       .attr('x', 0)
-      .attr('y', -45)
+      .attr('y', -90)
       .text("What British women want?");
 
     this.plot.append('text')
       .attr("class", "chart subtitle")
       .attr('x', 0)
-      .attr('y', -20)
+      .attr('y', -55)
       .attr("dy", 0)
-      .text("Each bar represents a ranks, from 1 to 6, where 1 is highly desirable and 6 is not at all.");
+      .text("Women ranked the traits below in attractiveness from 1 to 6. The bars tell us the percentage each rank received.")
 
   }
 
   createScales() {
-    // These map our data to positions on the screen
-    // https://github.com/d3/d3-scale
 
     this.x0Scale = d3.scaleBand()
-      .domain(this.keys)
+      .domain(this.majorCat)
       .rangeRound([0, this.innerWidth])
       .paddingInner(0.1);
 
     this.x1Scale = d3.scaleBand()
-      .domain([1,2,3,4,5,6])
+      .domain(this.minorCat)
       .rangeRound([0, this.x0Scale.bandwidth()])
       .padding(0.05);
 
-    const yMax = d3.max(this.data.map(d => d3.max(this.keys.map(key => d[key]))));
+    const yMax = d3.max(this.data.map(d => d3.max(this.majorCat.map(key => d[key]))));
 
     this.yScale = d3.scaleLinear()
       .domain([0, yMax]).nice()
@@ -83,21 +82,10 @@ class groupedBarChart {
       .selectAll("g")
       .data(this.data)
       .enter().append("g")
-        .attr("transform", (d, i) => {
-          return "translate(" + this.x0Scale(this.keys[i]) + ",0)";
-        })
-
-    ///////////////////
-    // LEFT OFF HERE //
-    ///////////////////
+        .attr("transform", (d, i) => `translate( ${this.x0Scale(this.majorCat[i])}, 0)`);
     
     const minorG = majorG.selectAll("rect")
-      .data( (d, i) => this.keys.map( ( 
-        key => {
-          console.log(({ key: d.rank, value: d[this.keys[i]] }));
-          ({ key: d.rank, value: d[this.keys[i]] }) 
-        }
-      ) ))
+      .data( d => this.majorCat.map((key, i) => ({ key: this.minorCat[i], value: d[key] })))
       .enter().append("rect")
         .attr("x", d => this.x1Scale(d.key) )
         .attr("y", d => this.yScale(d.value) )
